@@ -16,6 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from app import views
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('items/', views.get_items),
+    path('items', views.get_items_by_name),
+    path('profile', views.get_user),
+    path('encomendas', views.get_user_encomendas)
 ]

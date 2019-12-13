@@ -1,2 +1,6 @@
 gunicorn
 django-heroku
+djangorestframework
+markdown
+django-filter
+django-cors-headers
