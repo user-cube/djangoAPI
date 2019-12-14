@@ -110,8 +110,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES':[
-        'rest_framework.permissions.IsAuthenticated',
-        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.permissions.AllowAny',
     ],
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
 }
@@ -119,6 +118,8 @@ REST_FRAMEWORK = {
 JWT_AUTH = {
     'JWT_SECRET_KEY': SECRET_KEY,
     'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=1800),
+    'JWT_RESPONSE_PAYLOAD_HANDLER': 'app.payloadhandler.jwt_response_payload_handler',
+    'JWT_PAYLOAD_HANDLER': 'app.payloadhandler.jwt_payload_handler',
 }
 # CORS config
 CORS_ORIGIN_ALLOW_ALL = True

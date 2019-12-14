@@ -10,7 +10,9 @@ import jwt
 # Create your views here.
 
 def getToken(request):
-
+    """
+    Get token from headers.
+    """
     try:
         token = request.META['HTTP_AUTHORIZATION'].split()[1]
     except:
@@ -18,8 +20,16 @@ def getToken(request):
         token = ""
     return token
 
+def isSuperUser(token):
+    try:
+        decoded = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+        print(decoded)
+        if decoded['is_superuser'] == True:
+            return True
+    except:
+        return False
+
 @api_view(['GET'])
-@permission_classes([BasePermission])
 def get_items(request):
     """
     Obtém todos os items disponíveis.
@@ -30,7 +40,6 @@ def get_items(request):
 
 
 @api_view(['GET'])
-@permission_classes([BasePermission])
 def get_items_by_name(request, name):
     """
     Pesquisa de items por nome.
@@ -43,7 +52,6 @@ def get_items_by_name(request, name):
     return Response(serializer.data)
 
 @api_view(['GET'])
-@permission_classes([BasePermission])
 def get_items_info(request, id):
     """
     Informações de um produto.
@@ -57,7 +65,6 @@ def get_items_info(request, id):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
 def get_user(request):
     """
     Informações de perfil do utilizador.
@@ -66,6 +73,7 @@ def get_user(request):
     token = getToken(request)
     try:
         decoded = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+        print(decoded)
         user = decoded['username']
     except:
         print("Erro no token")
@@ -78,7 +86,6 @@ def get_user(request):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
 def get_user_encomendas(request):
     """
     Lista de compras do utilizador.
@@ -96,3 +103,39 @@ def get_user_encomendas(request):
         return Response(status=status.HTTP_404_NOT_FOUND)
     serializer = EncomendaSerializer(encomendas, many=True)
     return Response(serializer.data)
+
+@api_view(['GET'])
+def get_admin_panel(request):
+    """
+    Painel de administrador.
+    """
+    token = getToken(request)
+    superUser = isSuperUser(token)
+
+    if superUser == True:
+        try:
+            items = Items.objects.all()
+        except Items.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = ItemsSerializer(items, many=True)
+        return Response(serializer.data)
+    else:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['DELETE'])
+def deleteItems(request, id):
+    """
+    Delete Item
+    """
+    token = getToken(request)
+    superUser = isSuperUser(token)
+
+    if superUser == True:
+        try:
+            items = Items.objects.get(id=id)
+        except Items.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        items.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    else:
+        return Response(status=status.HTTP_404_NOT_FOUND)

@@ -29,6 +29,8 @@ urlpatterns = [
     path('profile', views.get_user),
     path('encomendas', views.get_user_encomendas),
     path('login/', obtain_jwt_token, name="token"),
+    path('admin/panel/', views.get_admin_panel),
+    path('admin/del/<int:id>', views.deleteItems),
     path('',
          include_docs_urls(title='XPTO Store API',
                            public=True,
