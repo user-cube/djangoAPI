@@ -206,3 +206,18 @@ def search_encomendas(request, name):
         return Response(serializer.data)
     else:
         return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+@api_view(['PUT'])
+def edit_items(request):
+    user = request.data['user']
+    try:
+        user = Profile.objects.get(user=user)
+    except:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    serializer = ProfileSerializer(user, data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        print("aqui")
+        return Response(serializer.data)
+    else:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
