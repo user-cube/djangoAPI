@@ -209,6 +209,9 @@ def search_encomendas(request, name):
 
 @api_view(['PUT'])
 def edit_perfil(request):
+    """
+    Alteração do perfil individual.
+    """
     user = request.data['user']
     try:
         user = Profile.objects.get(user=user)
@@ -223,6 +226,9 @@ def edit_perfil(request):
 
 @api_view(['PUT'])
 def edit_items(request):
+    """
+    Permite editar os items existentes na base de dados.
+    """
     id = request.data['id']
     try:
         items = Items.objects.get(id=id)
