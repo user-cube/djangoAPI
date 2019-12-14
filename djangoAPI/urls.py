@@ -22,7 +22,6 @@ from rest_framework.permissions import BasePermission
 from rest_framework_jwt.views import obtain_jwt_token
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
     path('items/', views.add_items),
     path('items/', views.get_items),
     path('items', views.edit_items),
@@ -31,10 +30,11 @@ urlpatterns = [
     path('profile', views.edit_perfil),
     path('profile', views.get_user),
     path('encomendas', views.get_user_encomendas),
-    path('encomendas/search/<str:name>', views.search_encomendas),
+    path('encomendas/<str:name>', views.search_encomendas),
     path('login/', obtain_jwt_token, name="token"),
-    path('admin/panel/', views.get_admin_panel),
-    path('admin/del/<int:id>', views.deleteItems),
+    path('adminPanel/', admin.site.urls),
+    path('admin/', views.get_admin_panel),
+    path('admin/<int:id>', views.deleteItems),
     path('admin/encomendas/', views.get_encomendas_admin),
     path('admin/encomendas/<str:name>', views.search_encomendas_admin),
     path('',
