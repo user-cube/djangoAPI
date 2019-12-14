@@ -208,7 +208,7 @@ def search_encomendas(request, name):
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 @api_view(['PUT'])
-def edit_items(request):
+def edit_perfil(request):
     user = request.data['user']
     try:
         user = Profile.objects.get(user=user)
@@ -217,7 +217,20 @@ def edit_items(request):
     serializer = ProfileSerializer(user, data=request.data)
     if serializer.is_valid():
         serializer.save()
-        print("aqui")
+        return Response(serializer.data)
+    else:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['PUT'])
+def edit_items(request):
+    id = request.data['id']
+    try:
+        items = Items.objects.get(id=id)
+    except:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    serializer = ItemsSerializer(items, data=request.data)
+    if serializer.is_valid():
+        serializer.save()
         return Response(serializer.data)
     else:
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

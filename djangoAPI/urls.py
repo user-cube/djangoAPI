@@ -24,9 +24,10 @@ from rest_framework_jwt.views import obtain_jwt_token
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('items/', views.get_items),
+    path('items', views.edit_items),
     path('items/<str:name>/', views.get_items_by_name),
     path('items/info/<int:id>', views.get_items_info),
-    path('items', views.edit_items),
+    path('profile', views.edit_perfil),
     path('profile', views.get_user),
     path('encomendas', views.get_user_encomendas),
     path('encomendas/search/<str:name>', views.search_encomendas),
