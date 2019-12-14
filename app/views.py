@@ -4,12 +4,26 @@ from rest_framework.decorators import api_view,  permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, BasePermission
 from app.serializers import *
+from djangoAPI.settings import SECRET_KEY
+import jwt
 
 # Create your views here.
+
+def getToken(request):
+
+    try:
+        token = request.META['HTTP_AUTHORIZATION'].split()[1]
+    except:
+        print("Sem token")
+        token = ""
+    return token
 
 @api_view(['GET'])
 @permission_classes([BasePermission])
 def get_items(request):
+    """
+    Obtém todos os items disponíveis.
+    """
     items = Items.objects.all()
     serializer = ItemsSerializer(items, many=True)
     return Response(serializer.data)
@@ -18,6 +32,9 @@ def get_items(request):
 @api_view(['GET'])
 @permission_classes([BasePermission])
 def get_items_by_name(request, name):
+    """
+    Pesquisa de items por nome.
+    """
     try:
         items = Items.objects.filter(titulo__icontains=name)
     except Items.DoesNotExist:
@@ -28,7 +45,9 @@ def get_items_by_name(request, name):
 @api_view(['GET'])
 @permission_classes([BasePermission])
 def get_items_info(request, id):
-    print(id)
+    """
+    Informações de um produto.
+    """
     try:
         items = Items.objects.filter(id=id)
     except:
@@ -38,10 +57,20 @@ def get_items_info(request, id):
 
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_user(request):
-    username = request.GET['user']
+    """
+    Informações de perfil do utilizador.
+    """
+    user = ""
+    token = getToken(request)
     try:
-        profile = Profile.objects.get(user=username)
+        decoded = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+        user = decoded['username']
+    except:
+        print("Erro no token")
+    try:
+        profile = Profile.objects.get(user=user)
     except Profile.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
     serializer = ProfileSerializer(profile)
@@ -49,8 +78,18 @@ def get_user(request):
 
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_user_encomendas(request):
-    user = request.GET['user']
+    """
+    Lista de compras do utilizador.
+    """
+    user = ""
+    token = getToken(request)
+    try:
+        decoded = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+        user = decoded['username']
+    except:
+        print("Erro no token")
     try:
         encomendas = Encomenda.objects.filter(user=user)
     except Encomenda.DoesNotExist:

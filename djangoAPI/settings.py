@@ -118,6 +118,7 @@ REST_FRAMEWORK = {
 
 JWT_AUTH = {
     'JWT_SECRET_KEY': SECRET_KEY,
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=1800),
 }
 # CORS config
 CORS_ORIGIN_ALLOW_ALL = True
