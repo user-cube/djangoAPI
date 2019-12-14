@@ -20,10 +20,22 @@ def getToken(request):
         token = ""
     return token
 
+def isValid(token):
+    """
+    Check if token is valid.
+    """
+    try:
+        decoded = jwt.decode(token, SECRET_KEY)
+        return True
+    except:
+        return False
+
 def isSuperUser(token):
+    """
+    Check if user is super user.
+    """
     try:
         decoded = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
-        print(decoded)
         if decoded['is_superuser'] == True:
             return True
     except:
@@ -76,7 +88,7 @@ def get_user(request):
         print(decoded)
         user = decoded['username']
     except:
-        print("Erro no token")
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
     try:
         profile = Profile.objects.get(user=user)
     except Profile.DoesNotExist:
@@ -92,15 +104,18 @@ def get_user_encomendas(request):
     """
     user = ""
     token = getToken(request)
+    print(token)
     try:
         decoded = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+        print(decoded)
         user = decoded['username']
     except:
-        print("Erro no token")
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
     try:
-        encomendas = Encomenda.objects.filter(user=user)
+        encomendas = Encomenda.objects.filter(user=user).order_by("-id"),
     except Encomenda.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
+
     serializer = EncomendaSerializer(encomendas, many=True)
     return Response(serializer.data)
 
@@ -120,7 +135,7 @@ def get_admin_panel(request):
         serializer = ItemsSerializer(items, many=True)
         return Response(serializer.data)
     else:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 @api_view(['DELETE'])
 def deleteItems(request, id):
@@ -138,4 +153,56 @@ def deleteItems(request, id):
         items.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     else:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+@api_view(['GET'])
+def get_encomendas_admin(request):
+    """
+    Obtém todas as encomendas realizadas na loja.
+    """
+    token = getToken(request)
+    superUser = isSuperUser(token)
+
+    if superUser == True:
+        try:
+            encomendas = Encomenda.objects.all().order_by("-id")
+        except Encomenda.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = EncomendaSerializer(encomendas, many=True)
+        return Response(serializer.data)
+    else:
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+@api_view(['GET'])
+def search_encomendas_admin(request, name):
+    """
+    Pesquisar encomedas realizadas na loja.
+    """
+    token = getToken(request)
+    superUser = isSuperUser(token)
+
+    if superUser == True:
+        try:
+            encomendas = Encomenda.objects.filter(produtos__titulo__contains=name).order_by("-id")
+        except Encomenda.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = EncomendaSerializer(encomendas, many=True)
+        return Response(serializer.data)
+    else:
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+@api_view(['GET'])
+def search_encomendas(request, name):
+    """
+    Pesquisar encomendas do utilizador.
+    """
+    token = getToken(request)
+    if isValid(token):
+        try:
+            encomendas = Encomenda.objects.filter(produtos__titulo__contains=name).order_by("-id")
+        except Encomenda.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = EncomendaSerializer(encomendas, many=True)
+        return Response(serializer.data)
+    else:
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
