@@ -19,7 +19,8 @@ class Items(models.Model):
 
 
 class Profile(models.Model):
-    nome = models.CharField(max_length=50)
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50, default="")
     user = models.CharField(max_length=50)
     picture = models.ImageField(
         upload_to='app/static/img/profile_pictures/' + str(hash(datetime.datetime.now())) + "/",
@@ -29,7 +30,7 @@ class Profile(models.Model):
     pais = models.CharField(max_length=25)
 
     def __str__(self):
-        return self.nome
+        return self.first_name
 
 
 class Wishlist(models.Model):

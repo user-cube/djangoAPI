@@ -37,6 +37,7 @@ urlpatterns = [
     path('admin/<int:id>', views.deleteItems),
     path('admin/encomendas/', views.get_encomendas_admin),
     path('admin/encomendas/<str:name>', views.search_encomendas_admin),
+    path('signup/', views.signup),
     path('',
          include_docs_urls(title='XPTO Store API',
                            public=True,
