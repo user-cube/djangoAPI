@@ -1,13 +1,14 @@
 from django.shortcuts import render
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view,  permission_classes
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated, BasePermission
 from app.serializers import *
-
 
 # Create your views here.
 
 @api_view(['GET'])
+@permission_classes([BasePermission])
 def get_items(request):
     items = Items.objects.all()
     serializer = ItemsSerializer(items, many=True)
@@ -15,10 +16,22 @@ def get_items(request):
 
 
 @api_view(['GET'])
+@permission_classes([BasePermission])
 def get_items_by_name(request, name):
     try:
         items = Items.objects.filter(titulo__icontains=name)
     except Items.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    serializer = ItemsSerializer(items, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([BasePermission])
+def get_items_info(request, id):
+    print(id)
+    try:
+        items = Items.objects.filter(id=id)
+    except:
         return Response(status=status.HTTP_404_NOT_FOUND)
     serializer = ItemsSerializer(items, many=True)
     return Response(serializer.data)

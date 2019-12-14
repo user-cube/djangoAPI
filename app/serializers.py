@@ -5,7 +5,7 @@ from rest_framework import serializers
 class ItemsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Items
-        fields = ('titulo', 'picture', 'descricao', 'short', 'preco')
+        fields = ('id', 'titulo', 'picture', 'descricao', 'short', 'preco')
 
 
 class EncomendaSerializer(serializers.ModelSerializer):

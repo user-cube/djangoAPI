@@ -17,15 +17,24 @@ from django.contrib import admin
 from django.urls import path
 
 from app import views
-from django.views.generic import TemplateView
 from rest_framework.documentation import include_docs_urls
+from rest_framework.decorators import permission_classes
+from rest_framework.permissions import BasePermission
+from rest_framework_simplejwt import views as jwt_views
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('items/', views.get_items),
     path('items/<str:name>/', views.get_items_by_name),
+    path('items/info/<int:id>', views.get_items_info),
     path('profile', views.get_user),
     path('encomendas', views.get_user_encomendas),
-    path('', include_docs_urls(title='XPTO Store API'))
+    path('',
+         include_docs_urls(title='XPTO Store API',
+                           public=True,
+                           authentication_classes=(),
+                           permission_classes=([BasePermission])
+                           )
+         )
 ]
