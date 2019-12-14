@@ -18,9 +18,10 @@ from django.urls import path
 
 from app import views
 from rest_framework.documentation import include_docs_urls
-from rest_framework.decorators import permission_classes
 from rest_framework.permissions import BasePermission
 from rest_framework_simplejwt import views as jwt_views
+from rest_framework_jwt.views import obtain_jwt_token
+
 
 
 urlpatterns = [
@@ -30,6 +31,7 @@ urlpatterns = [
     path('items/info/<int:id>', views.get_items_info),
     path('profile', views.get_user),
     path('encomendas', views.get_user_encomendas),
+    path('login/', obtain_jwt_token, name="token"),
     path('',
          include_docs_urls(title='XPTO Store API',
                            public=True,

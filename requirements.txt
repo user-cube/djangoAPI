@@ -5,4 +5,4 @@ markdown
 django-filter
 django-cors-headers
 coreapi
-djangorestframework_simplejwt
+djangorestframework-jwt
