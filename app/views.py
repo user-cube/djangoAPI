@@ -213,30 +213,54 @@ def edit_perfil(request):
     Alteração do perfil individual.
     """
     user = request.data['user']
-    try:
-        user = Profile.objects.get(user=user)
-    except:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-    serializer = ProfileSerializer(user, data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data)
+    token = getToken(request)
+    if isValid(token):
+        try:
+            user = Profile.objects.get(user=user)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = ProfileSerializer(user, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     else:
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 @api_view(['PUT'])
 def edit_items(request):
     """
     Permite editar os items existentes na base de dados.
     """
-    id = request.data['id']
-    try:
-        items = Items.objects.get(id=id)
-    except:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-    serializer = ItemsSerializer(items, data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data)
+    token = getToken(request)
+    superUser = isSuperUser(token)
+    if superUser == True:
+        id = request.data['id']
+        try:
+            items = Items.objects.get(id=id)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = ItemsSerializer(items, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     else:
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+@api_view(['POST'])
+def add_items(request):
+    """
+    Adicionar items à loja.
+    """
+    token = getToken(request)
+    if isValid(token):
+        serializer = ItemsSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
