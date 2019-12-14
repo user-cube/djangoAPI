@@ -15,8 +15,7 @@ def get_items(request):
 
 
 @api_view(['GET'])
-def get_items_by_name(request):
-    name = request.GET['name']
+def get_items_by_name(request, name):
     try:
         items = Items.objects.filter(titulo__icontains=name)
     except Items.DoesNotExist:

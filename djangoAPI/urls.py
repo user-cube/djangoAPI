@@ -17,11 +17,15 @@ from django.contrib import admin
 from django.urls import path
 
 from app import views
+from django.views.generic import TemplateView
+from rest_framework.documentation import include_docs_urls
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('items/', views.get_items),
-    path('items', views.get_items_by_name),
+    path('items/<str:name>/', views.get_items_by_name),
     path('profile', views.get_user),
-    path('encomendas', views.get_user_encomendas)
+    path('encomendas', views.get_user_encomendas),
+    path('', include_docs_urls(title='XPTO Store API'))
 ]
