@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -15,7 +14,6 @@ def getToken(request):
     try:
         token = request.META['HTTP_AUTHORIZATION'].split()[1]
     except:
-        print("Sem token")
         token = ""
     return token
 
@@ -84,7 +82,6 @@ def get_user(request):
     token = getToken(request)
     try:
         decoded = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
-        print(decoded)
         user = decoded['username']
     except:
         return Response(status=status.HTTP_401_UNAUTHORIZED)
@@ -103,10 +100,8 @@ def get_user_encomendas(request):
     """
     user = ""
     token = getToken(request)
-    print(token)
     try:
         decoded = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
-        print(decoded)
         user = decoded['username']
     except:
         return Response(status=status.HTTP_401_UNAUTHORIZED)
