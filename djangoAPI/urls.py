@@ -28,7 +28,7 @@ urlpatterns = [
     path('items/<str:name>/', views.get_items_by_name),
     path('items/info/<int:id>', views.get_items_info),
     path('profile', views.edit_perfil),
-    path('profile', views.get_user),
+    path('profile/', views.get_user),
     path('encomendas', views.get_user_encomendas),
     path('encomendas/<str:name>', views.search_encomendas),
     path('login/', obtain_jwt_token, name="token"),
