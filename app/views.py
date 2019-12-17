@@ -103,14 +103,13 @@ def get_user_encomendas(request):
     try:
         decoded = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
         user = decoded['username']
-        print(user)
     except:
         return Response(status=status.HTTP_401_UNAUTHORIZED)
     try:
         encomendas = Encomenda.objects.filter(user=user).order_by("-id")
     except Encomenda.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
-    serializer = EncomendaSerializer(encomendas, many=True)
+    serializer = EncomendaReadSerializer(encomendas, many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])
