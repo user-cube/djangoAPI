@@ -179,7 +179,7 @@ def search_encomendas_admin(request, name):
             encomendas = Encomenda.objects.filter(produtos__titulo__contains=name).order_by("-id")
         except Encomenda.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = EncomendaSerializer(encomendas, many=True)
+        serializer = EncomendaReadSerializer(encomendas, many=True)
         return Response(serializer.data)
     else:
         return Response(status=status.HTTP_401_UNAUTHORIZED)
@@ -195,7 +195,7 @@ def search_encomendas(request, name):
             encomendas = Encomenda.objects.filter(produtos__titulo__contains=name).order_by("-id")
         except Encomenda.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = EncomendaSerializer(encomendas, many=True)
+        serializer = EncomendaReadSerializer(encomendas, many=True)
         return Response(serializer.data)
     else:
         return Response(status=status.HTTP_401_UNAUTHORIZED)
